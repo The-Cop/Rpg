@@ -26,7 +26,6 @@ public class Main {
 //        testTableOutput();
 //        testPlainOutput();
         testMenuOutput();
-        System.out.println("lvcvxcol");
     }
 
     private static void testMenuOutput() {
