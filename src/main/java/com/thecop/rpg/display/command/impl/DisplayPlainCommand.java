@@ -44,18 +44,18 @@ public class DisplayPlainCommand extends DisplayCommand {
     }
 
     private String getFormat() {
-        return "| %-" + getWidthForFromat() + "s |";
+        return "| %-" + getWidthForFormat() + "s |";
     }
 
     private int getWidthForDisplayData() {
-        int width = getWidthForFromat();
+        int width = getWidthForFormat();
         if (useHalfWidth) {
             width = width / 2;
         }
         return width;
     }
 
-    private int getWidthForFromat() {
+    private int getWidthForFormat() {
         int width = display.getWidth();
         width = width - 2;//display bounds
         width = width - 2;//spaces on both sides

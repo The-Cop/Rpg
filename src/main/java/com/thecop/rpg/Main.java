@@ -4,6 +4,7 @@ package com.thecop.rpg;
 import com.thecop.rpg.display.Display;
 import com.thecop.rpg.display.command.DisplayCommand;
 import com.thecop.rpg.display.command.impl.DisplayByColumnsCommand;
+import com.thecop.rpg.display.command.impl.DisplayLevelMapCommand;
 import com.thecop.rpg.display.command.impl.DisplayMenuCommand;
 import com.thecop.rpg.display.command.impl.DisplayPlainCommand;
 import com.thecop.rpg.display.data.DisplayData;
@@ -12,6 +13,8 @@ import com.thecop.rpg.display.data.impl.DisplayDataSimple;
 import com.thecop.rpg.display.data.impl.DisplayDataWithValue;
 import com.thecop.rpg.display.data.impl.DisplayMenuItem;
 import com.thecop.rpg.display.interaction.MenuItem;
+import com.thecop.rpg.level.LevelMap;
+import com.thecop.rpg.level.generator.LevelMapGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,14 +25,23 @@ import java.util.stream.Collectors;
  * Created by TheCop on 15.12.2015.
  */
 public class Main {
+    private static final int DISPLAY_WIDTH = 220;
     public static void main(String[] args) {
 //        testTableOutput();
 //        testPlainOutput();
         testMenuOutput();
+        testLevelMapOutput();
+    }
+
+    private static void testLevelMapOutput() {
+        Display display = new Display(DISPLAY_WIDTH);
+        LevelMap levelMap = LevelMapGenerator.generateMap();
+        DisplayCommand command = new DisplayLevelMapCommand(levelMap);
+        display.display(command);
     }
 
     private static void testMenuOutput() {
-        Display display = new Display(200);
+        Display display = new Display(DISPLAY_WIDTH);
         String description = "Cast a mega spell on all enemies in universe. Deals 100 damage.";
         String controlString = "D";
         List<DisplayCommand> commands = new ArrayList<>();
@@ -62,7 +74,7 @@ public class Main {
     }
 
     private static void testPlainOutput() {
-        Display display = new Display(200);
+        Display display = new Display(DISPLAY_WIDTH);
         String s1 = "Избранная статья. AZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZ" +
                 "Портрет Оригена из «Les vrais pourtraits...» Андре Теве (1584). " +
                 "Первый оригенистский спор - один из двух споров в христианской церкви относительно личности Оригена и его учения. В 390-х годах сложились партии сторонников и противников учения Оригена, конфликт между которыми продолжался примерно с 393 по 404 год. Обширное литературное наследие Оригена (ок. 185 - ок. 254) стало причиной споров ещё при жизни александрийского богослова, однако до завершения арианского спора в 381 году главной проблемой ортодоксальной христианской церкви была борьба против арианства. Конфликт протекал одновременно в Египте, Палестине и в столицах Римской империи. Инициаторами спора по различным причинам были видные богословы своего времени епископ Епифаний Кипрский и патриарх Феофил Александрийский." +
@@ -81,7 +93,7 @@ public class Main {
     }
 
     private static void testTableOutput() {
-        Display display = new Display(200);
+        Display display = new Display(DISPLAY_WIDTH);
         DisplayCommand c = new DisplayByColumnsCommand(4, getDisplaydataGroups(8));
         display.display(c);
     }

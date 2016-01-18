@@ -3,22 +3,19 @@ package com.thecop.rpg.display.command.impl;
 import com.thecop.rpg.display.Display;
 import com.thecop.rpg.display.command.DisplayCommand;
 import com.thecop.rpg.display.data.DisplayDataGroup;
-import com.thecop.rpg.display.data.impl.DisplayMenuItem;
+import com.thecop.rpg.display.data.impl.DisplayLevelMap;
+import com.thecop.rpg.level.LevelMap;
 
 /**
  * Created by TheCop on 15.12.2015.
  */
-public class DisplayMenuCommand extends DisplayCommand {
+public class DisplayLevelMapCommand extends DisplayCommand {
 
     private Display display;
     private DisplayDataGroup group;
 
-    public DisplayMenuCommand(DisplayMenuItem data) {
-        this.group = new DisplayDataGroup(data);
-    }
-
-    public DisplayMenuCommand(DisplayDataGroup group) {
-        this.group = group;
+    public DisplayLevelMapCommand(LevelMap levelMap) {
+        this.group = new DisplayDataGroup(new DisplayLevelMap(levelMap));
     }
 
     @Override
@@ -33,12 +30,11 @@ public class DisplayMenuCommand extends DisplayCommand {
         System.out.println(String.format(format, line));
     }
 
-
-    //TODO move these two methods to abstract class
     private String getFormat() {
         return "| %-" + getWidthForFormat() + "s |";
     }
 
+    //TODO move to abstract class?
     private int getWidthForFormat() {
         int width = display.getWidth();
         width = width - 2;//display bounds
