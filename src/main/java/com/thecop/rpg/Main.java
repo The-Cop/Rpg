@@ -14,7 +14,7 @@ import com.thecop.rpg.display.data.impl.DisplayDataWithValue;
 import com.thecop.rpg.display.data.impl.DisplayMenuItem;
 import com.thecop.rpg.display.interaction.MenuItem;
 import com.thecop.rpg.level.LevelMap;
-import com.thecop.rpg.level.generator.LevelMapGenerator;
+import com.thecop.rpg.level.generator.impl.SimpleLevelMapGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public class Main {
 
     private static void testLevelMapOutput() {
         Display display = new Display(DISPLAY_WIDTH);
-        LevelMap levelMap = LevelMapGenerator.generateMap();
+        LevelMap levelMap = SimpleLevelMapGenerator.generateMap();
         DisplayCommand command = new DisplayLevelMapCommand(levelMap);
         display.display(command);
     }

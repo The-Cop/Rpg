@@ -1,5 +1,7 @@
 package com.thecop.rpg.level;
 
+import com.thecop.rpg.level.tiles.TileObject;
+
 public class Tile {
 
     private static final char DEFAULT_DISPLAY_CHAR = '#';
@@ -7,6 +9,10 @@ public class Tile {
     private TileObject object;
 
     public Tile() {
+    }
+
+    public Tile(TileObject object) {
+        this.object = object;
     }
 
     public boolean isRevealed() {
@@ -22,7 +28,7 @@ public class Tile {
     }
 
     public boolean isBlockingMovement() {
-        return object != null;
+        return object != null && object.isBlocking();
     }
 
     public TileObject getObject() {

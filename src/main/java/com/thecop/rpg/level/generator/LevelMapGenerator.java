@@ -1,26 +1,16 @@
 package com.thecop.rpg.level.generator;
 
 import com.thecop.rpg.level.LevelMap;
-import com.thecop.rpg.level.Tile;
 
-public class LevelMapGenerator {
+public interface LevelMapGenerator {
     //TODO implement different generators
     // http://gamedevelopment.tutsplus.com/tutorials/create-a-procedurally-generated-dungeon-cave-system--gamedev-10099
     // http://gamedevelopment.tutsplus.com/tutorials/cave-levels-cellular-automata--gamedev-9664
+    // http://www.roguebasin.com/index.php?title=Basic_BSP_Dungeon_generation
 
-    public static final int MAP_WIDTH = 200;
-    public static final int MAP_HEIGHT = 30;
+    //TODO may be additional parameters will be necessary: "game skill", "depth of the level" (deeper is harder),
+    // "loot amount", "monsters count", e.t.c.
+    //Maybe create a builder for this
+    LevelMap generateMap();
 
-    public static LevelMap generateMap(){
-        Tile[][] grid = new Tile[MAP_HEIGHT][MAP_WIDTH];
-        fillEmptyTiles(grid);
-        return new LevelMap(grid);
-    }
-    private static void fillEmptyTiles(Tile[][] grid){
-        for(int i=0;i<grid.length;i++){
-            for(int j=0;j<grid[i].length;j++){
-                grid[i][j] = new Tile();
-            }
-        }
-    }
 }
