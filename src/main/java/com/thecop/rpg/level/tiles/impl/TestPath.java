@@ -2,11 +2,13 @@ package com.thecop.rpg.level.tiles.impl;
 
 import com.thecop.rpg.level.tiles.TileObject;
 
-public class SimpleWall implements TileObject {
+public class TestPath implements TileObject {
+
+    //TODO delete this class
 
     @Override
     public char getTileChar() {
-        return '#';
+        return ' ';
     }
 
     @Override

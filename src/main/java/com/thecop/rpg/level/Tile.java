@@ -4,7 +4,7 @@ import com.thecop.rpg.level.tiles.TileObject;
 
 public class Tile {
 
-    private static final char DEFAULT_DISPLAY_CHAR = '#';
+    private static final char DEFAULT_DISPLAY_CHAR = ' ';
     private boolean isRevealed = false;
     private TileObject object;
 

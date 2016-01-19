@@ -6,9 +6,17 @@ import com.thecop.rpg.level.generator.LevelMapGenerator;
 
 public class SimpleLevelMapGenerator implements LevelMapGenerator {
 
+    private int mapWidth;
+    private int mapHeight;
+
+    public SimpleLevelMapGenerator(int mapWidth, int mapHeight) {
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
+    }
+
     @Override
-    public LevelMap generateMap(int width, int height) {
-        Tile[][] grid = new Tile[height][width];
+    public LevelMap generateMap() {
+        Tile[][] grid = new Tile[mapHeight][mapWidth];
         fillEmptyTiles(grid);
         return new LevelMap(grid);
     }

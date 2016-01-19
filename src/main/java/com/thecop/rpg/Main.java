@@ -14,7 +14,7 @@ import com.thecop.rpg.display.data.impl.DisplayDataWithValue;
 import com.thecop.rpg.display.data.impl.DisplayMenuItem;
 import com.thecop.rpg.display.interaction.MenuItem;
 import com.thecop.rpg.level.LevelMap;
-import com.thecop.rpg.level.generator.impl.SimpleLevelMapGenerator;
+import com.thecop.rpg.level.generator.impl.RoomLevelMapGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,9 +35,29 @@ public class Main {
 
     private static void testLevelMapOutput() {
         Display display = new Display(DISPLAY_WIDTH);
-        LevelMap levelMap = SimpleLevelMapGenerator.generateMap();
-        DisplayCommand command = new DisplayLevelMapCommand(levelMap);
-        display.display(command);
+        List<DisplayCommand> displayCommands = new ArrayList<>();
+
+        LevelMap levelMap = new RoomLevelMapGenerator(210,30).generateMap();
+        DisplayCommand levelCommand = new DisplayLevelMapCommand(levelMap);
+        displayCommands.add(levelCommand);
+
+        //menu and text in table view
+        DisplayDataGroup menuGroup = createMenuDisplayGroup();
+        DisplayDataGroup textGroup = new DisplayDataGroup(
+                Arrays.asList(
+                        new DisplayDataSimple[]
+                                {
+                                        new DisplayDataSimple("You see a great wide cave."),
+                                        new DisplayDataSimple("Since we are moving from left to right we need the two corresponding x values, but only one y value since we won't be moving up or down. When we move vertically we will need the y values. In the for loop at the beginning of each function, we iterate from the starting value (x or y) to the ending value until we have carved out the entire corridor.")
+                                }
+                )
+        );
+        List<DisplayDataGroup> groups = new ArrayList<>();
+        groups.add(menuGroup);
+        groups.add(textGroup);
+        DisplayByColumnsCommand displayByColumnsCommand = new DisplayByColumnsCommand(2,groups);
+        displayCommands.add(displayByColumnsCommand);
+        display.display(displayCommands);
     }
 
     private static void testMenuOutput() {
@@ -52,11 +72,11 @@ public class Main {
     }
 
     private static DisplayCommand createDisplayMenuCommand() {
-        DisplayCommand dc = new DisplayMenuCommand(createMenudisplayGroup());
+        DisplayCommand dc = new DisplayMenuCommand(createMenuDisplayGroup());
         return dc;
     }
 
-    private static DisplayDataGroup createMenudisplayGroup() {
+    private static DisplayDataGroup createMenuDisplayGroup() {
         return new DisplayDataGroup(
                 createMenu().stream()
                         .map(mi -> new DisplayMenuItem(mi))
