@@ -20,6 +20,7 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
     private int maxRoomWidth = 30;
     private int minRoomHeight = 5;
     private int maxRoomHeight = 15;
+    //TODO implement even width of path
     private int pathWidth = 3;
 
     private Tile[][] grid;
@@ -53,17 +54,12 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
             boolean failed = false;
             for (Room otherRoom : rooms) {
                 if (room.intersects(otherRoom)) {
-                    System.err.println("Intersection:");
-                    System.err.println(room);
-                    System.err.println(otherRoom);
                     failed = true;
                     break;
                 }
             }
             if (!failed) {
                 carveRoom(room);
-                System.out.println("Carved room: " + room);
-
                 //corridors
                 if (!rooms.isEmpty()) {
                     carveCorridors(room, rooms.get(rooms.size()-1));
@@ -85,12 +81,9 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
         Point center1 = room1.getCenter();
         Point center2 = room2.getCenter();
         if (random.nextBoolean()) {
-//        if (true) {
-            System.out.println("Horizontal first");
             carveHorizontalCorridor(center1.getX(),center2.getX(),center1.getY(),pathWidth);
             carveVerticalCorridor(center1.getY(),center2.getY(),center2.getX(),pathWidth);
         } else {
-            System.out.println("Vertical first");
             carveVerticalCorridor(center1.getY(),center2.getY(),center1.getX(),pathWidth);
             carveHorizontalCorridor(center1.getX(),center2.getX(),center2.getY(),pathWidth);
 
