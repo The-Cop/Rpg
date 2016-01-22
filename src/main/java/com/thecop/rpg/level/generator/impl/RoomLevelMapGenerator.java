@@ -4,7 +4,7 @@ import com.thecop.rpg.level.LevelMap;
 import com.thecop.rpg.level.Point;
 import com.thecop.rpg.level.Tile;
 import com.thecop.rpg.level.generator.LevelMapGenerator;
-import com.thecop.rpg.level.tiles.TileFactory;
+import com.thecop.rpg.level.tiles.TileObjectFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +32,20 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
 
     @Override
     public LevelMap generateMap() {
-        grid = new Tile[mapHeight][mapWidth];
-        fillWallTiles();
+        initializeMap();
         generateRooms();
         return new LevelMap(grid);
     }
 
+    private void initializeMap() {
+        grid = new Tile[mapHeight][mapWidth];
+        fillWallTiles();
+    }
+
     private void fillWallTiles() {
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                grid[i][j] = TileFactory.simpleWall();
+        for (int y = 0; y < grid.length; y++) {
+            for (int x = 0; x < grid[y].length; x++) {
+                grid[y][x] = new Tile(new Point(x,y),TileObjectFactory.simpleWall());
             }
         }
     }
@@ -72,7 +76,7 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
     private void carveRoom(Room room) {
         for (int y = room.getTopLeft().getY(); y <= room.getBottomRight().getY(); y++) {
             for (int x = room.getTopLeft().getX(); x <= room.getBottomRight().getX(); x++) {
-                grid[y][x] = TileFactory.emptyTile();
+                grid[y][x].setObject(null);
             }
         }
     }
@@ -107,7 +111,7 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
         int toY = y + thickness / 2;
         for (int yy = fromY; yy <= toY; yy++) {
             for (int x = fromX; x <= toX; x++) {
-                grid[yy][x] = TileFactory.testPath();
+                grid[yy][x].setObject(TileObjectFactory.testPath());
             }
         }
     }
@@ -129,7 +133,7 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
         int toX = x + thickness / 2;
         for (int xx = fromX; xx <= toX; xx++) {
             for (int y = fromY; y <= toY; y++) {
-                grid[y][xx] = TileFactory.testPath();
+                grid[y][xx].setObject(TileObjectFactory.testPath());
             }
         }
     }
@@ -160,6 +164,7 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
             return new Point((bottomRight.getX() + topLeft.getX()) / 2, (bottomRight.getY() + topLeft.getY()) / 2);
         }
 
+        //TODO make a 1-tile gap between rooms
         public boolean intersects(Room room) {
             return !(
                     //other room is far to the right

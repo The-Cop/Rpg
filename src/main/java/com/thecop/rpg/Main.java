@@ -12,7 +12,7 @@ import com.thecop.rpg.display.data.DisplayDataGroup;
 import com.thecop.rpg.display.data.impl.DisplayDataSimple;
 import com.thecop.rpg.display.data.impl.DisplayDataWithValue;
 import com.thecop.rpg.display.data.impl.DisplayMenuItem;
-import com.thecop.rpg.display.interaction.MenuItem;
+import com.thecop.rpg.userinput.MenuItem;
 import com.thecop.rpg.level.LevelMap;
 import com.thecop.rpg.level.generator.impl.RoomLevelMapGenerator;
 
@@ -25,11 +25,13 @@ import java.util.stream.Collectors;
  * Created by TheCop on 15.12.2015.
  */
 public class Main {
-    private static final int DISPLAY_WIDTH = 220;
+    private static final int DISPLAY_WIDTH = 180;
     public static void main(String[] args) {
 //        testTableOutput();
 //        testPlainOutput();
-        testMenuOutput();
+//        testMenuOutput();
+        testLevelMapOutput();
+        testLevelMapOutput();
         testLevelMapOutput();
     }
 
@@ -37,7 +39,7 @@ public class Main {
         Display display = new Display(DISPLAY_WIDTH);
         List<DisplayCommand> displayCommands = new ArrayList<>();
 
-        LevelMap levelMap = new RoomLevelMapGenerator(210,30).generateMap();
+        LevelMap levelMap = new RoomLevelMapGenerator(DISPLAY_WIDTH-4,30).generateMap();
         DisplayCommand levelCommand = new DisplayLevelMapCommand(levelMap);
         displayCommands.add(levelCommand);
 
@@ -65,9 +67,9 @@ public class Main {
         String description = "Cast a mega spell on all enemies in universe. Deals 100 damage.";
         String controlString = "D";
         List<DisplayCommand> commands = new ArrayList<>();
-        commands.add(new DisplayMenuCommand(new DisplayMenuItem(new MenuItem(controlString, description))));
+        commands.add(new DisplayMenuCommand(new DisplayMenuItem(new SimpleMenuItem(controlString, description))));
         commands.add(createDisplayMenuCommand());
-        commands.add(new DisplayMenuCommand(new DisplayMenuItem(new MenuItem(controlString, description))));
+        commands.add(new DisplayMenuCommand(new DisplayMenuItem(new SimpleMenuItem(controlString, description))));
         display.display(commands);
     }
 
@@ -86,10 +88,10 @@ public class Main {
 
     private static List<MenuItem> createMenu() {
         List<MenuItem> menu = new ArrayList<>();
-        menu.add(new MenuItem("D", "Cast a mega spell on all enemies in universe. Deals 100 damage."));
-        menu.add(new MenuItem("S", "Stop everything"));
-        menu.add(new MenuItem("A", "Attack manually. Again, very long unimaginable menu description with some shoop-da-woop in the ENDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"));
-        menu.add(new MenuItem("Q", "Quit"));
+        menu.add(new SimpleMenuItem("D", "Cast a mega spell on all enemies in universe. Deals 100 damage."));
+        menu.add(new SimpleMenuItem("S", "Stop everything"));
+        menu.add(new SimpleMenuItem("A", "Attack manually. Again, very long unimaginable menu description with some shoop-da-woop in the ENDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"));
+        menu.add(new SimpleMenuItem("Q", "Quit"));
         return menu;
     }
 
@@ -168,5 +170,26 @@ public class Main {
             sb.append("-");
         }
         System.out.println(sb.toString());
+    }
+
+    private static class SimpleMenuItem implements MenuItem{
+
+        private String controlString;
+        private String description;
+
+        public SimpleMenuItem(String controlString, String description) {
+            this.controlString = controlString;
+            this.description = description;
+        }
+
+        @Override
+        public String getControlString() {
+            return controlString;
+        }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
     }
 }

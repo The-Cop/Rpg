@@ -1,6 +1,7 @@
 package com.thecop.rpg.level.generator.impl;
 
 import com.thecop.rpg.level.LevelMap;
+import com.thecop.rpg.level.Point;
 import com.thecop.rpg.level.Tile;
 import com.thecop.rpg.level.generator.LevelMapGenerator;
 
@@ -22,9 +23,9 @@ public class SimpleLevelMapGenerator implements LevelMapGenerator {
     }
 
     private static void fillEmptyTiles(Tile[][] grid) {
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                grid[i][j] = new Tile();
+        for (int y = 0; y < grid.length; y++) {
+            for (int x = 0; x < grid[y].length; x++) {
+                grid[y][x] = new Tile(new Point(x,y));
             }
         }
     }

@@ -5,13 +5,18 @@ import com.thecop.rpg.level.tiles.TileObject;
 public class Tile {
 
     private static final char DEFAULT_DISPLAY_CHAR = ' ';
+    private static final char NOT_REVEALED_CHAR = '+';
+
+    private Point coords;
     private boolean isRevealed = false;
     private TileObject object;
 
-    public Tile() {
+    public Tile(Point coords) {
+        this.coords = coords;
     }
 
-    public Tile(TileObject object) {
+    public Tile(Point coords, TileObject object) {
+        this.coords = coords;
         this.object = object;
     }
 

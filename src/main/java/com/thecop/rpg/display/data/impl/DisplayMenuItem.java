@@ -1,7 +1,7 @@
 package com.thecop.rpg.display.data.impl;
 
 import com.thecop.rpg.display.data.DisplayData;
-import com.thecop.rpg.display.interaction.MenuItem;
+import com.thecop.rpg.userinput.MenuItem;
 import com.thecop.rpg.display.util.FormatUtil;
 
 import java.util.ArrayList;
