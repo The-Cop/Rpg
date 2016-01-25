@@ -12,49 +12,86 @@ public class MovePlayerCommand implements MenuItem {
     private String description;
     private Direction direction;
     private int distance;
+    private int revealRadius;
 
-    public MovePlayerCommand(LevelMap levelMap, String controlString, String description,
-            Direction direction, int distance) {
-        this.levelMap = levelMap;
+    public MovePlayerCommand(String controlString, String description, Direction direction, int distance, LevelMap levelMap, int revealRadius) {
         this.controlString = controlString;
         this.description = description;
         this.direction = direction;
         this.distance = distance;
+        this.levelMap = levelMap;
+        this.revealRadius = revealRadius;
     }
 
     public void move() {
-
         work here
+
+        if (!canMove()) {
+            System.err.println("Trying to move while can not move");
+            return;
+        }
+        Point targetPoint = getTargetCoords();
+        Point currentPoint = levelMap.getPlayerPartyPosition();
+        while (!currentPoint.equals(targetPoint)) {
+            currentPoint = nextPoint(currentPoint);
+            revealAreaAround(currentPoint);
+        }
     }
 
+    //TODO delete?
     public boolean canMove() {
-        if (!isPathWalkable()) {
-            return true;
+        return isPathWalkable();
+    }
+
+    private void revealAreaAround(Point point) {
+        for (int y = point.getY() - revealRadius; y <= point.getY() + revealRadius; y++) {
+            for (int x = point.getX() - revealRadius; x <= point.getX() + revealRadius; x++) {
+                try {
+                    levelMap.getGrid()[y][x].setIsRevealed(true);
+                } catch (IndexOutOfBoundsException e) {
+                    //ignore
+                }
+            }
         }
-        return false;
     }
 
     private boolean isPathWalkable() {
         Point targetPoint = getTargetCoords();
         Tile targetTile = levelMap.getTileAt(targetPoint);
+        //check target point. Can not move to unrevealed tile.
         if (!levelMap.isPointInBounds(targetPoint) || targetTile.isBlockingMovement() || !targetTile.isRevealed()) {
             return false;
         }
+        //check all point on the way one-by-one
+        Point currentPoint = levelMap.getPlayerPartyPosition();
+        while (!currentPoint.equals(targetPoint)) {
+            currentPoint = nextPoint(currentPoint);
+            if (levelMap.getTileAt(currentPoint).isBlockingMovement()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-        return false;
+    private Point nextPoint(Point from) {
+        return pointInDistance(from, 1);
     }
 
     private Point getTargetCoords() {
         Point playerPosition = levelMap.getPlayerPartyPosition();
+        return pointInDistance(playerPosition, distance);
+    }
+
+    private Point pointInDistance(Point from, int dist) {
         switch (direction) {
             case NORTH:
-                return new Point(playerPosition.getX(), playerPosition.getY() - 1);
+                return new Point(from.getX(), from.getY() - dist);
             case EAST:
-                return new Point(playerPosition.getX() + 1, playerPosition.getY());
+                return new Point(from.getX() + dist, from.getY());
             case SOUTH:
-                return new Point(playerPosition.getX(), playerPosition.getY() + 1);
+                return new Point(from.getX(), from.getY() + dist);
             case WEST:
-                return new Point(playerPosition.getX() - 1, playerPosition.getY());
+                return new Point(from.getX() - dist, from.getY());
             default:
                 throw new IllegalStateException("Unknown direction");
         }
