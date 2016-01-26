@@ -8,11 +8,11 @@ public class TestPath implements TileObject {
 
     @Override
     public char getTileChar() {
-        return ' ';
+        return '.';
     }
 
     @Override
     public boolean isBlocking() {
-        return true;
+        return false;
     }
 }

@@ -25,7 +25,7 @@ public class SimpleLevelMapGenerator implements LevelMapGenerator {
     private static void fillEmptyTiles(Tile[][] grid) {
         for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[y].length; x++) {
-                grid[y][x] = new Tile(new Point(x,y));
+                grid[y][x] = new Tile(new Point(x, y));
             }
         }
     }

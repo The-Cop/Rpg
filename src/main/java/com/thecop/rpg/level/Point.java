@@ -1,6 +1,7 @@
 package com.thecop.rpg.level;
 
 public final class Point {
+
     private int x;
     private int y;
 

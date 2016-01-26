@@ -28,12 +28,18 @@ public class Tile {
         this.isRevealed = isRevealed;
     }
 
+    //TODO make revealed-aware
     public char getDisplayChar() {
-        return object != null ? object.getTileChar() : DEFAULT_DISPLAY_CHAR;
+        return !isRevealed() ? NOT_REVEALED_CHAR :
+               object != null ? object.getTileChar() : DEFAULT_DISPLAY_CHAR;
     }
 
     public boolean isBlockingMovement() {
         return object != null && object.isBlocking();
+    }
+
+    public boolean isEmpty() {
+        return object == null;
     }
 
     public TileObject getObject() {
@@ -42,5 +48,9 @@ public class Tile {
 
     public void setObject(TileObject object) {
         this.object = object;
+    }
+
+    public Point getCoords() {
+        return coords;
     }
 }

@@ -15,11 +15,11 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
     private int mapWidth, mapHeight;
     private static Random random = new Random();
     //TODO make these map-size-dependant
-    private int roomsCount = 100;
-    private int minRoomWidth = 15;
-    private int maxRoomWidth = 30;
-    private int minRoomHeight = 5;
-    private int maxRoomHeight = 15;
+    private int roomsCount = 20;
+    private int minRoomWidth = 5;
+    private int maxRoomWidth = 20;
+    private int minRoomHeight = 4;
+    private int maxRoomHeight = 9;
     //TODO implement even width of path
     private int pathWidth = 3;
 
@@ -45,7 +45,7 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
     private void fillWallTiles() {
         for (int y = 0; y < grid.length; y++) {
             for (int x = 0; x < grid[y].length; x++) {
-                grid[y][x] = new Tile(new Point(x,y),TileObjectFactory.simpleWall());
+                grid[y][x] = new Tile(new Point(x, y), TileObjectFactory.simpleWall());
             }
         }
     }
@@ -66,7 +66,7 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
                 carveRoom(room);
                 //corridors
                 if (!rooms.isEmpty()) {
-                    carveCorridors(room, rooms.get(rooms.size()-1));
+                    carveCorridors(room, rooms.get(rooms.size() - 1));
                 }
                 rooms.add(room);
             }
@@ -85,11 +85,11 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
         Point center1 = room1.getCenter();
         Point center2 = room2.getCenter();
         if (random.nextBoolean()) {
-            carveHorizontalCorridor(center1.getX(),center2.getX(),center1.getY(),pathWidth);
-            carveVerticalCorridor(center1.getY(),center2.getY(),center2.getX(),pathWidth);
+            carveHorizontalCorridor(center1.getX(), center2.getX(), center1.getY(), pathWidth);
+            carveVerticalCorridor(center1.getY(), center2.getY(), center2.getX(), pathWidth);
         } else {
-            carveVerticalCorridor(center1.getY(),center2.getY(),center1.getX(),pathWidth);
-            carveHorizontalCorridor(center1.getX(),center2.getX(),center2.getY(),pathWidth);
+            carveVerticalCorridor(center1.getY(), center2.getY(), center1.getX(), pathWidth);
+            carveHorizontalCorridor(center1.getX(), center2.getX(), center2.getY(), pathWidth);
 
         }
     }
@@ -111,7 +111,7 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
         int toY = y + thickness / 2;
         for (int yy = fromY; yy <= toY; yy++) {
             for (int x = fromX; x <= toX; x++) {
-                grid[yy][x].setObject(TileObjectFactory.testPath());
+                grid[yy][x].setObject(null);
             }
         }
     }
@@ -133,7 +133,7 @@ public class RoomLevelMapGenerator implements LevelMapGenerator {
         int toX = x + thickness / 2;
         for (int xx = fromX; xx <= toX; xx++) {
             for (int y = fromY; y <= toY; y++) {
-                grid[y][xx].setObject(TileObjectFactory.testPath());
+                grid[y][xx].setObject(null);
             }
         }
     }

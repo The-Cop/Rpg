@@ -8,6 +8,7 @@ import java.util.List;
  * Created by TheCop on 15.12.2015.
  */
 public class Display {
+
     private static final int DISPLAYS_SEPARATION_LINES_COUNT = 7;
     private int width;
 

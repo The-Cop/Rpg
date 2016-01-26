@@ -9,6 +9,7 @@ import com.thecop.rpg.display.data.impl.DisplayDataSimple;
  * Created by TheCop on 15.12.2015.
  */
 public class DisplayPlainCommand extends DisplayCommand {
+
     private Display display;
     private boolean useHalfWidth = false;
     private DisplayDataGroup group;

@@ -11,6 +11,7 @@ import java.util.List;
  * Created by TheCop on 20.12.2015.
  */
 public class DisplayMenuItem implements DisplayData {
+
     private static final int CONTROL_STRING_FIELD_WIDTH = 5;
     private MenuItem menuItem;
 

@@ -6,6 +6,7 @@ import java.util.List;
  * Created by TheCop on 15.12.2015.
  */
 public class DisplayDataWithValue extends DisplayDataSimple {
+
     private String value;
 
     public DisplayDataWithValue(String data, String value) {

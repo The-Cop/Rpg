@@ -1,7 +1,9 @@
 package com.thecop.rpg.game.state;
 
 public interface GameState {
-    void display();
-    void userInput(String input);
 
+    //todo may be rename to "invokeState"?
+    void display();
+
+    //TODO may be make abstract class with methods:
 }

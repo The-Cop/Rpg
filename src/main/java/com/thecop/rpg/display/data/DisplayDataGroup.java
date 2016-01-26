@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
  * Created by TheCop on 15.12.2015.
  */
 public class DisplayDataGroup {
+
     private List<DisplayData> group;
 
     public DisplayDataGroup(List<DisplayData> group) {

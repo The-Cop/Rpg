@@ -9,6 +9,7 @@ import java.util.List;
  * Created by TheCop on 15.12.2015.
  */
 public class DisplayDataSimple implements DisplayData {
+
     protected String data;
 
     public DisplayDataSimple(String data) {

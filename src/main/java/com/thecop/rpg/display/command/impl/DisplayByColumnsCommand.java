@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
  * Created by TheCop on 15.12.2015.
  */
 public class DisplayByColumnsCommand extends DisplayCommand {
+
     //TODO think about refactor and/or commenting code
     private List<DisplayDataGroup> groups;
     private int columns;
@@ -36,9 +37,12 @@ public class DisplayByColumnsCommand extends DisplayCommand {
         while (iterator.hasNext()) {
             List<DisplayDataGroup> rowOfGroups = iterator.next();
             printRowOfGroups(rowOfGroups, columnWidth, lastColumnWidth);
-            if (iterator.hasNext()) display.printLine();
+            if (iterator.hasNext()) {
+                display.printLine();
+            }
         }
-//        rowsOfGroups.stream().forEach(rowOfGroups -> printRowOfGroups(rowOfGroups, columnWidth, lastColumnWidth));
+        //        rowsOfGroups.stream().forEach(rowOfGroups -> printRowOfGroups(rowOfGroups, columnWidth,
+        // lastColumnWidth));
     }
 
     private void printRowOfGroups(List<DisplayDataGroup> rowOfGroups, int columnWidth, int lastColumnWidth) {
@@ -71,7 +75,8 @@ public class DisplayByColumnsCommand extends DisplayCommand {
         return sb.toString();
     }
 
-    private List<FormattedGroup> formatGroups(List<DisplayDataGroup> rowOfGroups, int columnWidth, int lastColumnWidth) {
+    private List<FormattedGroup> formatGroups(List<DisplayDataGroup> rowOfGroups, int columnWidth,
+            int lastColumnWidth) {
         List<FormattedGroup> formattedGroupsRow = new ArrayList<>();
         for (int i = 0; i < columns; i++) {
             int width = i == columns - 1 ? lastColumnWidth : columnWidth;
@@ -127,6 +132,7 @@ public class DisplayByColumnsCommand extends DisplayCommand {
     }
 
     private static final class FormattedGroup {
+
         private List<String> lines;
         private int width;
 

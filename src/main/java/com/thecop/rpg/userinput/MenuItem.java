@@ -9,4 +9,6 @@ public interface MenuItem {
     String getControlString();
 
     String getDescription();
+
+    void execute();
 }

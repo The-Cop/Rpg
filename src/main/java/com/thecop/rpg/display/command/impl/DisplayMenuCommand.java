@@ -33,7 +33,6 @@ public class DisplayMenuCommand extends DisplayCommand {
         System.out.println(String.format(format, line));
     }
 
-
     //TODO move these two methods to abstract class
     private String getFormat() {
         return "| %-" + getWidthForFormat() + "s |";

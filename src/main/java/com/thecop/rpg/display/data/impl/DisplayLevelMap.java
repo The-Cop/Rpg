@@ -27,16 +27,17 @@ public class DisplayLevelMap implements DisplayData {
         return getLevelMapLines();
     }
 
-    private List<String> getLevelMapLines(){
+    private List<String> getLevelMapLines() {
         List<String> lines = new ArrayList<>();
-        for(int i=0;i<levelMap.getGrid().length;i++){
+        for (int i = 0; i < levelMap.getGrid().length; i++) {
             lines.add(getRow(i));
         }
         return lines;
     }
-    private String getRow(int yCoord){
+
+    private String getRow(int yCoord) {
         StringBuilder line = new StringBuilder();
-        for(int i=0;i<levelMap.getGrid()[yCoord].length;i++){
+        for (int i = 0; i < levelMap.getGrid()[yCoord].length; i++) {
             line.append(levelMap.getGrid()[yCoord][i].getDisplayChar());
         }
         return line.toString();
