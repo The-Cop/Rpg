@@ -7,7 +7,7 @@ import com.thecop.rpg.level.LevelMap;
 //todo check all appropriate classes to become final
 public final class Game {
 
-    private static final int DISPLAY_WIDTH = 100;
+    private static final int DISPLAY_WIDTH = 150;
 
     private static Game instance = new Game();
 
@@ -52,7 +52,7 @@ public final class Game {
         this.levelMap = levelMap;
     }
 
-    //TODO ge this from players party
+    //TODO get this from players party
     @Deprecated
     public int getRevealRadius() {
         return 3;

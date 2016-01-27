@@ -43,7 +43,7 @@ public class Main {
 
     private static void testGame() {
         Game game = Game.getInstance();
-        LevelMap levelMap = new RoomLevelMapGenerator(game.getDisplay().getWidth() - 4, 30).generateMap();
+        LevelMap levelMap = new RoomLevelMapGenerator(100, 30).generateMap();
         levelMap.placePlayerSomewhere(3);
         GameState levelWalkState = new LevelWalkState(levelMap);
         game.setState(levelWalkState);
