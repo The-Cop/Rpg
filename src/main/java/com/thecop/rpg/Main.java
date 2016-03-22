@@ -1,27 +1,7 @@
 package com.thecop.rpg;
 
-import com.thecop.rpg.display.Display;
-import com.thecop.rpg.display.command.DisplayCommand;
-import com.thecop.rpg.display.command.impl.DisplayByColumnsCommand;
-import com.thecop.rpg.display.command.impl.DisplayLevelMapCommand;
-import com.thecop.rpg.display.command.impl.DisplayMenuCommand;
-import com.thecop.rpg.display.command.impl.DisplayPlainCommand;
-import com.thecop.rpg.display.data.DisplayData;
-import com.thecop.rpg.display.data.DisplayDataGroup;
-import com.thecop.rpg.display.data.impl.DisplayDataSimple;
-import com.thecop.rpg.display.data.impl.DisplayDataWithValue;
-import com.thecop.rpg.display.data.impl.DisplayMenuItem;
-import com.thecop.rpg.game.Game;
-import com.thecop.rpg.game.state.GameState;
-import com.thecop.rpg.game.state.impl.LevelWalkState;
-import com.thecop.rpg.level.LevelMap;
-import com.thecop.rpg.level.generator.impl.RoomLevelMapGenerator;
-import com.thecop.rpg.userinput.MenuItem;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by TheCop on 15.12.2015.
@@ -31,247 +11,300 @@ public class Main {
     private static final int DISPLAY_WIDTH = 180;
 
     public static void main(String[] args) {
-        //        testTableOutput();
-        //        testPlainOutput();
-        //        testMenuOutput();
-        //        testLevelMapOutput();
-        //        testLevelMapOutput();
-        //        testLevelMapOutput();
-
-        testGame();
+        FightController fc = new FightController(generateChars());
+        fc.start();
     }
 
-    private static void testGame() {
-        Game game = Game.getInstance();
-        LevelMap levelMap = new RoomLevelMapGenerator(100, 30).generateMap();
-        levelMap.placePlayerSomewhere(3);
-        GameState levelWalkState = new LevelWalkState(levelMap);
-        game.setState(levelWalkState);
-        game.invokeCurrentSate();
+    private static List<GameChar> generateChars(){
+        List<GameChar> gameChars = new ArrayList<>();
 
+        Spell fireSpell = new Spell(5,"Fire");
+        Spell coldSpell = new Spell(10,"Cold");
+        Spell electroSpell = new Spell(20,"Electro");
+
+        GameChar gc1 = new GameChar(1, "Slow man");
+        gc1.setSpell(fireSpell);
+        GameChar gc2 = new GameChar(3, "Agile man");
+        gc2.setSpell(coldSpell);
+        GameChar gc3 = new GameChar(4, "MESSI");
+        gc3.setSpell(electroSpell);
+        GameChar gc4 = new GameChar(4, "MESSI2");
+        gc4.setSpell(electroSpell);
+
+        gameChars.add(gc1);
+        gameChars.add(gc2);
+        gameChars.add(gc3);
+        gameChars.add(gc4);
+        return gameChars;
     }
 
-    private static void testLevelMapOutput() {
-        Display display = new Display(DISPLAY_WIDTH);
-        List<DisplayCommand> displayCommands = new ArrayList<>();
+    private static final class FightController {
+        private List<GameChar> gameChars;
+        private long baseTimeValue;
 
-        LevelMap levelMap = new RoomLevelMapGenerator(DISPLAY_WIDTH - 4, 30).generateMap();
-        DisplayCommand levelCommand = new DisplayLevelMapCommand(levelMap);
-        displayCommands.add(levelCommand);
+        public FightController(long baseTimeValue, List<GameChar> gameChars) {
+            this.baseTimeValue = baseTimeValue;
+            this.gameChars = gameChars;
+        }
+        public FightController(List<GameChar> gameChars) {
+            this.baseTimeValue = gameChars.stream().mapToLong(gc->gc.getSpeed()).distinct().reduce((i,acc)->i*acc).getAsLong()*2;
+            System.out.println("Base value set to " + baseTimeValue);
+            this.gameChars = gameChars;
+        }
 
-        //menu and text in table view
-        DisplayDataGroup menuGroup = createMenuDisplayGroup();
-        DisplayDataGroup textGroup = new DisplayDataGroup(
-                Arrays.asList(
-                        new DisplayDataSimple[]
-                                {
-                                        new DisplayDataSimple("You see a great wide cave."),
-                                        new DisplayDataSimple(
-                                                "Since we are moving from left to right we need the two corresponding"
-                                                        + " x values, but only one y value since we won't be moving "
-                                                        + "up or down. When we move vertically we will need the y "
-                                                        + "values. In the for loop at the beginning of each function,"
-                                                        + " we iterate from the starting value (x or y) to the ending"
-                                                        + " value until we have carved out the entire corridor.")
-                                }
-                )
-        );
-        List<DisplayDataGroup> groups = new ArrayList<>();
-        groups.add(menuGroup);
-        groups.add(textGroup);
-        DisplayByColumnsCommand displayByColumnsCommand = new DisplayByColumnsCommand(2, groups);
-        displayCommands.add(displayByColumnsCommand);
-        display.display(displayCommands);
+        public void start() {
+            System.out.println("Starting fight");
+            System.out.println("Gamechars size = " + gameChars.size());
+            initCooldownTimers();
+            System.out.println("Cooldown timers initialized");
+            while (!isTheEnd()) {
+                gameChars.forEach(GameChar::tickAndTurn);
+            }
+            gameChars.forEach(gc -> System.out.println(gc.charInfo()));
+        }
+
+        private void initCooldownTimers(){
+            gameChars.forEach(gc->gc.initTurnTimer(baseTimeValue));
+        }
+
+
+        private boolean isTheEnd() {
+            return gameChars.stream()
+                    .anyMatch(gc -> gc.getTurnsCount() >= 100);
+        }
+
+        public List<GameChar> getGameChars() {
+            return gameChars;
+        }
+
+        public void setGameChars(List<GameChar> gameChars) {
+            this.gameChars = gameChars;
+        }
+
+
+        public long getBaseTimeValue() {
+            return baseTimeValue;
+        }
+
+        public void setBaseTimeValue(long baseTimeValue) {
+            this.baseTimeValue = baseTimeValue;
+        }
     }
 
-    private static void testMenuOutput() {
-        Display display = new Display(DISPLAY_WIDTH);
-        String description = "Cast a mega spell on all enemies in universe. Deals 100 damage.";
-        String controlString = "D";
-        List<DisplayCommand> commands = new ArrayList<>();
-        commands.add(new DisplayMenuCommand(new DisplayMenuItem(new SimpleMenuItem(controlString, description))));
-        commands.add(createDisplayMenuCommand());
-        commands.add(new DisplayMenuCommand(new DisplayMenuItem(new SimpleMenuItem(controlString, description))));
-        display.display(commands);
-    }
+    private static final class GameChar {
+        private int speed;
+        private long turnsCount = 0;
+        private Spell spell;
+        private String name;
+        private CooldownTimer turnTimer;
 
-    private static DisplayCommand createDisplayMenuCommand() {
-        DisplayCommand dc = new DisplayMenuCommand(createMenuDisplayGroup());
-        return dc;
-    }
+        public GameChar(int speed, String name) {
+            this.speed = speed;
+            this.name = name;
+        }
 
-    private static DisplayDataGroup createMenuDisplayGroup() {
-        return new DisplayDataGroup(
-                createMenu().stream()
-                        .map(mi -> new DisplayMenuItem(mi))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    private static List<MenuItem> createMenu() {
-        List<MenuItem> menu = new ArrayList<>();
-        menu.add(new SimpleMenuItem("D", "Cast a mega spell on all enemies in universe. Deals 100 damage."));
-        menu.add(new SimpleMenuItem("S", "Stop everything"));
-        menu.add(new SimpleMenuItem("A",
-                "Attack manually. Again, very long unimaginable menu description with some shoop-da-woop in the "
-                        + "ENDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"));
-        menu.add(new SimpleMenuItem("Q", "Quit"));
-        return menu;
-    }
-
-    private static void testPlainOutput() {
-        Display display = new Display(DISPLAY_WIDTH);
-        String s1 =
-                "Избранная статья. "
-                        +
-                        "AZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZ"
-                        +
-                        "Портрет Оригена из «Les vrais pourtraits...» Андре Теве (1584). " +
-                        "Первый оригенистский спор - один из двух споров в христианской церкви относительно личности "
-                        + "Оригена и его учения. В 390-х годах сложились партии сторонников и противников учения "
-                        + "Оригена, конфликт между которыми продолжался примерно с 393 по 404 год. Обширное "
-                        + "литературное наследие Оригена (ок. 185 - ок. 254) стало причиной споров ещё при жизни "
-                        + "александрийского богослова, однако до завершения арианского спора в 381 году главной "
-                        + "проблемой ортодоксальной христианской церкви была борьба против арианства. Конфликт "
-                        + "протекал одновременно в Египте, Палестине и в столицах Римской империи. Инициаторами спора"
-                        + " по различным причинам были видные богословы своего времени епископ Епифаний Кипрский и "
-                        + "патриарх Феофил Александрийский."
-                        +
-                        "В Египте основным предметом разногласий стал вопрос о Боге как имеющем человеческое обличье."
-                        + " Сторонники буквального толкования Библии, которых было особенно много в среде египетского"
-                        + " монашества, ссылались на Быт. 1:26-27 и на указание Нового Завета о том, что, по "
-                        + "пришествии Христа став плотью, Слово обрело вид человека. Ориген же относил богоподобие к "
-                        + "сфере мышления. В 399 году на соборе под председательством Феофила Александрийского в "
-                        + "Александрии были осуждены Ориген, а также его ученики и сочинения. Это решение было "
-                        + "подтверждено соборами в Иерусалиме, Риме и на Кипре. Одновременно с этим напряжённую "
-                        + "богословскую полемику, особый накал которой придавали давние дружеские отношения и личные "
-                        + "разногласия, вели Иероним Стридонский и Руфин Аквилейский. После осуждения на Кипре в "
-                        + "Константинополь прибыл Епифаний Кипрский с целью склонить к такому же решению архиепископа"
-                        + " Иоанна Златоуста. Для симпатизировавшего оригенистам Златоуста этот спор совпал с личным "
-                        + "конфликтом с императрицей Евдоксией, чем воспользовались его противники, добившись "
-                        + "изгнания константинопольского архиепископа.";
-        String s2 =
-                "Катастрофа DC-6 под Лонгмонтом - авиационная катастрофа, произошедшая вечером во вторник 1 ноября "
-                        + "1955 года в небе к востоку от Лонгмонта и в полусотне километров от Денвера (штат "
-                        + "Колорадо). Пассажирский самолёт Douglas DC-6B американской авиакомпании United Air Lines "
-                        + "выполнял пассажирский рейс из Денвера в Портленд (штат Орегон), но спустя некоторое время "
-                        + "после взлёта неожиданно взорвался в воздухе, при этом погибли 44 человека. Достаточно "
-                        + "быстро было установлено, что причиной катастрофы стала детонация заложенной на борт бомбы,"
-                        + " после чего дело передали Федеральному бюро расследований, в истории которого это было "
-                        + "первое расследование крупного авиационного происшествия.";
-        DisplayDataSimple d1 = new DisplayDataSimple(s1);
-        DisplayDataSimple d2 = new DisplayDataSimple(s2);
-        DisplayDataGroup dg = new DisplayDataGroup(
-                Arrays.asList(new DisplayDataSimple[]{d1, d2, new DisplayDataWithValue("I am valued!", "666")}));
-        DisplayPlainCommand dpc1 = new DisplayPlainCommand(d1, false);
-        DisplayPlainCommand dpc2 = new DisplayPlainCommand(d2, false);
-        DisplayPlainCommand dpcg = new DisplayPlainCommand(dg, false);
-        display.display(dpc1);
-        display.display(dpc2);
-        display.display(Arrays.asList(
-                new DisplayCommand[]{new DisplayByColumnsCommand(4, getDisplaydataGroups(8)), dpc1, dpc2}));
-        display.display(dpcg);
-    }
-
-    private static void testTableOutput() {
-        Display display = new Display(DISPLAY_WIDTH);
-        DisplayCommand c = new DisplayByColumnsCommand(4, getDisplaydataGroups(8));
-        display.display(c);
-    }
-
-    private static List<DisplayDataGroup> getDisplaydataGroups(int count) {
-        List<DisplayDataGroup> list = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            if (i % 3 == 0) {
-                list.add(getLongDataGroup(i + 1));
-            } else if (i % 2 == 0) {
-                list.add(getMediumDataGroup(i + 1));
-            } else {
-                list.add(getShortDataGroup(i + 1));
+        public void initTurnTimer(long baseTimerValue) {
+            turnTimer = CooldownTimer.forSpeed(speed, baseTimerValue);
+            System.out.println("Gamechar " + name + " initialized cdt: " + turnTimer.toString());
+            if(spell!=null){
+                spell.initCooldownTimer(baseTimerValue);
             }
         }
-        return list;
-    }
 
-    private static DisplayDataGroup getShortDataGroup(int n) {
-        List<DisplayData> ddata = new ArrayList<>();
-        ddata.add(new DisplayDataSimple("I am short display data no" + n));
-        ddata.add(new DisplayDataWithValue("I am short display data with value", "555"));
-        ddata.add(new DisplayDataWithValue("Strength", "5"));
-        return new DisplayDataGroup(ddata);
-    }
-
-    private static DisplayDataGroup getMediumDataGroup(int n) {
-        List<DisplayData> ddata = new ArrayList<>();
-        ddata.add(new DisplayDataSimple("I am medium display data no" + n));
-        ddata.add(new DisplayDataWithValue("I am medium data with value", "555"));
-        ddata.add(new DisplayDataWithValue("Agility", "5"));
-        ddata.add(new DisplayDataSimple(""));
-        ddata.add(new DisplayDataSimple(
-                "I also have some long strings to demonstrate the line breaking and formatting, so look at this "
-                        + "really long text here, lol."));
-        ddata.add(new DisplayDataWithValue(
-                "And the same shit with valued data display object. Hardly to believe the game would have such long "
-                        + "valued things, but who knows?",
-                "666"));
-        return new DisplayDataGroup(ddata);
-    }
-
-    private static DisplayDataGroup getLongDataGroup(int n) {
-        List<DisplayData> ddata = new ArrayList<>();
-        ddata.add(new DisplayDataSimple("I am long display data no" + n));
-        ddata.add(new DisplayDataWithValue("I am long data with value", "555"));
-        ddata.add(new DisplayDataWithValue("Ingelligence", "5"));
-        ddata.add(new DisplayDataSimple(""));
-        ddata.add(new DisplayDataSimple(
-                "I also have some long strings to demonstrate the line breaking and formatting, so look at this "
-                        + "really long text here, omg."));
-        ddata.add(new DisplayDataWithValue(
-                "And the same shit with valued data display object. Hardly to believe the game would have such long "
-                        + "valued things, but who knows?",
-                "777"));
-        ddata.add(new DisplayDataSimple(""));
-        ddata.add(new DisplayDataSimple(
-                "AZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZAZ"));
-        ddata.add(new DisplayDataWithValue(
-                "OLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLOOLOLOLO",
-                "IAMVALUE"));
-
-        return new DisplayDataGroup(ddata);
-    }
-
-    private static void printLine(int width) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < width; i++) {
-            sb.append("-");
+        public void tickAndTurn() {
+            turnTimer.tick();
+            if(spell!=null){
+                spell.tick();
+//                System.out.println("Spell " + getSpell().getName() + " cooldown: " + getSpell().getCurrentCooldown() + "/" + getSpell().getCooldown());
+            }
+            if (turnTimer.isReady()) {
+//                System.out.println("Char " + getName() + " turned");
+                turnTimer.reset();
+                turnsCount++;
+                if(spell!=null){
+                    if(spell.canBeCast()){
+                        spell.cast();
+                    }
+                }
+            }
         }
-        System.out.println(sb.toString());
+
+        public String charInfo() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("GameChar ")
+                    .append(getName())
+                    .append(" turned ")
+                    .append(getTurnsCount())
+                    .append(" times\n");
+            if (getSpell() != null) {
+                sb.append("Spell ")
+                        .append(getSpell().getName())
+                        .append(" was cast ")
+                        .append(getSpell().getTimesCast())
+                        .append(" times");
+            }
+            return sb.toString();
+        }
+
+        public int getSpeed() {
+            return speed;
+        }
+
+        public void setSpeed(int speed) {
+            this.speed = speed;
+        }
+
+        public long getTurnsCount() {
+            return turnsCount;
+        }
+
+        public void setTurnsCount(long turnsCount) {
+            this.turnsCount = turnsCount;
+        }
+
+        public Spell getSpell() {
+            return spell;
+        }
+
+        public void setSpell(Spell spell) {
+            this.spell = spell;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 
-    private static class SimpleMenuItem implements MenuItem {
+    private static final class Spell {
+        private long cooldown;
+        private long timesCast = 0;
+        private String name;
+        private CooldownTimer cooldownTimer;
 
-        private String controlString;
-        private String description;
+        public Spell(long cooldown, String name) {
+            this.cooldown = cooldown;
+            this.name = name;
+        }
 
-        public SimpleMenuItem(String controlString, String description) {
-            this.controlString = controlString;
-            this.description = description;
+        public void initCooldownTimer(long baseTimerValue) {
+            cooldownTimer = CooldownTimer.forCooldown(cooldown, baseTimerValue);
+            System.out.println("Spell " + name + " initialized cdt: " + cooldownTimer.toString());
+        }
+
+        public boolean canBeCast() {
+            return cooldownTimer.isReady();
+        }
+
+        public void cast() {
+            if (canBeCast()) {
+                timesCast++;
+//                System.out.println("Spell " + name + " casted");
+                cooldownTimer.reset();
+            }
+        }
+
+        public void tick() {
+            cooldownTimer.tick();
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public long getTimesCast() {
+            return timesCast;
+        }
+
+        public void setTimesCast(long timesCast) {
+            this.timesCast = timesCast;
+        }
+
+        public long getCooldown() {
+            return cooldown;
+        }
+
+        public void setCooldown(long cooldown) {
+            this.cooldown = cooldown;
+        }
+
+        public double getCurrentCooldown() {
+            return cooldown * cooldownTimer.readiness();
+        }
+
+    }
+
+    private static final class CooldownTimer {
+        private static final double FACTOR = 20d;
+        private double ticksToFire;
+        private long currentTicks = 0;
+
+        public static CooldownTimer forSpeed(long speed, long baseTimerValue) {
+            CooldownTimer cdt = new CooldownTimer();
+            cdt.setTicksToFire(((double) baseTimerValue) / speed);
+            return cdt;
+        }
+
+        public static CooldownTimer forCooldown(long coolDown, long baseTimerValue) {
+            CooldownTimer cdt = new CooldownTimer();
+            double doubleCooldown = (double) coolDown;
+            cdt.setTicksToFire(((double) baseTimerValue) / (1 / (doubleCooldown / FACTOR)));
+            return cdt;
+        }
+
+        private CooldownTimer() {
+        }
+
+        public void tick() {
+            if (currentTicks < ticksToFire) {
+                currentTicks++;
+            }
+        }
+
+        public double readiness() {
+            if (isReady()) {
+                return 1;
+            }
+            return ((double)currentTicks)/ticksToFire;
+        }
+
+        public boolean isReady() {
+            return currentTicks >= ticksToFire;
+        }
+
+        public void reset() {
+            currentTicks = 0;
+        }
+
+        public double getTicksToFire() {
+            return ticksToFire;
+        }
+
+        public void setTicksToFire(double ticksToFire) {
+            this.ticksToFire = ticksToFire;
+        }
+
+        public long getCurrentTicks() {
+            return currentTicks;
+        }
+
+        public void setCurrentTicks(long currentTicks) {
+            this.currentTicks = currentTicks;
         }
 
         @Override
-        public String getControlString() {
-            return controlString;
+        public String toString() {
+            return "CooldownTimer{" +
+                    "ticksToFire=" + ticksToFire +
+                    ", currentTicks=" + currentTicks +
+                    '}';
         }
-
-        @Override
-        public String getDescription() {
-            return description;
-        }
-
-        @Override
-        public void execute() {
-            System.out.println("executed " + controlString);
-        }
-
     }
 }
